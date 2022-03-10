@@ -1,0 +1,24 @@
+<html>
+<head>
+<title>新しいタブ</title>
+<link rel="stylesheet" href="https://unpkg.com/7.css">
+</head>
+<body>
+<a href="#dialog-demo">開く</a>
+
+<div class="window is-bright" id="dialog-demo" role="dialog" aria-labelledby="dialog-title">
+  <div class="title-bar">
+    <div class="title-bar-text" id="dialog-title">画像</div>
+    <div class="title-bar-controls">
+      <button aria-label="Close" onclick="history.back()"></button>
+    </div>
+  </div>
+  <div class="window-body">
+<img src="CR1.png" width="700" height="500">
+  </div>
+  <footer style="text-align: right">
+    <button onclick="history.back()">Cancel</button>
+  </footer>
+</div>
+</body>
+</html>
