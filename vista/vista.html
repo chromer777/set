@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>logon.scr</title>
+    <style>
+        body {
+            background: black;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            height: 100vh;
+            cursor: default; /* 初期状態ではカーソルを表示 */
+        }
+        .sprite {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            pointer-events: none; /* 画像を選択できないようにする */
+        }
+        .fade-in {
+            opacity: 1;
+        }
+        .fade-out {
+            opacity: 0;
+        }
+        .no-cursor {
+            cursor: none; /* カーソルを隠す */
+        }
+    </style>
+</head>
+<body>
+
+<script>
+    const images = [
+        "IDB_FLARE01.png", "IDB_FLARE02.png", "IDB_FLARE03.png", 
+        "IDB_FLARE04.png", "IDB_FLARE05.png", "IDB_FLARE06.png",
+        "IDB_FLARE07.png", "IDB_FLARE08.png", "IDB_FLARE09.png",
+        "IDB_FLARE10.png", "IDB_FLARE11.png", "IDB_FLARE12.png",
+        "IDB_FLARE13.png", "IDB_FLARE14.png", "IDB_FLARE15.png",
+        "IDB_FLARE16.png", "IDB_FLARE17.png", "IDB_FLARE18.png",
+        "IDB_FLARE19.png", "IDB_FLARE20.png", "IDB_FLARE21.png",
+        "IDB_FLARE22.png", "IDB_FLARE23.png", "IDB_FLARE24.png",
+        "IDB_FLARE25.png", "IDB_FLARE26.png", "IDB_FLARE27.png",
+        "IDB_FLARE28.png", "IDB_FLARE29.png", "IDB_FLARE30.png",
+        "IDB_FLARE31.png", "IDB_FLARE32.png", "IDB_FLARE33.png",
+        "IDB_FLARE34.png", "IDB_FLARE35.png", "IDB_FLARE36.png",
+        "IDB_FLARE37.png", "IDB_FLARE38.png", "IDB_FLARE39.png",
+        "IDB_FLARE40.png", "IDB_FLARE41.png", "IDB_FLARE42.png",
+        "IDB_FLARE43.png", "IDB_FLARE44.png", "IDB_FLARE45.png"
+    ];
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function animateSprite() {
+        const sprite = document.createElement("img");
+        sprite.className = "sprite";
+        document.body.appendChild(sprite);
+
+        const totalFrames = images.length;
+        const frameDuration = 2000 / totalFrames;
+        const fadeDuration = 3000;
+        const displayDuration = 4000 - 2 * fadeDuration;
+
+        let image = new Image();
+        image.src = images[0]; // 最初の画像を設定してサイズを取得
+        image.onload = () => {
+            const imageWidth = image.width;
+            const imageHeight = image.height;
+
+            const xPosition = getRandomInt(0, window.innerWidth - imageWidth);
+            const yPosition = getRandomInt(0, window.innerHeight - imageHeight);
+            sprite.style.left = `${xPosition}px`;
+            sprite.style.top = `${yPosition}px`;
+
+            function nextFrame(frame) {
+                if (frame < totalFrames) {
+                    sprite.src = images[frame];
+                    setTimeout(() => nextFrame(frame + 1), frameDuration);
+                } else {
+                    setTimeout(() => {
+                        sprite.classList.add("fade-out");
+                        setTimeout(() => {
+                            sprite.remove();
+                        }, fadeDuration);
+                    }, fadeDuration);
+                }
+            }
+
+            sprite.classList.add("fade-in");
+            setTimeout(() => {
+                nextFrame(0);
+            }, fadeDuration);
+
+            setTimeout(() => {
+                if (sprite) {
+                    sprite.classList.add("fade-out");
+                    setTimeout(() => {
+                        sprite.remove();
+                    }, fadeDuration);
+                }
+            }, displayDuration + 2 * fadeDuration);
+        };
+    }
+
+    function scheduleNextSprite() {
+        const showSpriteChance = getRandomInt(1, 3); // 1/3の確率で2回表示するために1~3のランダム値を生成
+        const delay = getRandomInt(15000, 60000);
+
+        if (showSpriteChance === 1) {
+            // 1/3の確率で2回スプライトを表示
+            animateSprite();
+            setTimeout(animateSprite, 5000); // 2回目の表示
+            setTimeout(scheduleNextSprite, delay + 10000); // 次のスケジュール
+        } else {
+            // 2/3の確率で1回だけスプライトを表示
+            animateSprite();
+            setTimeout(scheduleNextSprite, delay + 3000); // 次のスケジュール
+        }
+    }
+
+    function handleCursorVisibility() {
+        let timer;
+        const timeout = 3000; // 3秒間カーソルが動かない場合にカーソルを隠す
+
+        function resetTimer() {
+            clearTimeout(timer);
+            if (!document.fullscreenElement) {
+                document.body.classList.remove("no-cursor");
+                timer = setTimeout(() => {
+                    document.body.classList.add("no-cursor");
+                }, timeout);
+            }
+        }
+
+        document.addEventListener("mousemove", resetTimer);
+        document.addEventListener("keydown", resetTimer); // キーボードの入力でもタイマーをリセット
+        resetTimer(); // 初期化
+
+        document.addEventListener("fullscreenchange", () => {
+            if (document.fullscreenElement) {
+                document.body.classList.remove("no-cursor");
+                startPreventScreenSaver();
+            } else {
+                resetTimer();
+                stopPreventScreenSaver();
+            }
+        });
+    }
+
+    function disableRightClick() {
+        document.addEventListener("contextmenu", (event) => {
+            event.preventDefault(); // 右クリックメニューを無効化
+        });
+    }
+
+    function toggleFullscreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        } else {
+            document.documentElement.requestFullscreen();
+        }
+    }
+
+    function startPreventScreenSaver() {
+        window.preventScreenSaver = setInterval(() => {
+            // ページ内で軽く動かす
+            document.body.style.transform = 'translateY(0px)';
+        }, 1000); // 1分ごとにページ内で軽く動かす
+    }
+
+    function stopPreventScreenSaver() {
+        clearInterval(window.preventScreenSaver);
+    }
+
+    window.onload = () => {
+        scheduleNextSprite();
+        handleCursorVisibility();
+        disableRightClick(); // 右クリックを無効化
+    };
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === 'f') {
+            toggleFullscreen();
+        }
+    });
+</script>
+
+</body>
+</html>
