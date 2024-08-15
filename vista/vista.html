@@ -11,13 +11,14 @@
             overflow: hidden;
             position: relative;
             height: 100vh;
-            cursor: default; /* 初期状態ではカーソルを表示 */
+            cursor: default;
         }
         .sprite {
             position: absolute;
             opacity: 0;
             transition: opacity 1s ease-in-out;
-            pointer-events: none; /* 画像を選択できないようにする */
+            user-select: none;
+            pointer-events: none;
         }
         .fade-in {
             opacity: 1;
@@ -63,7 +64,7 @@
         const totalFrames = images.length;
         const frameDuration = 2000 / totalFrames;
         const fadeDuration = 3000;
-        const displayDuration = 4000 - 2 * fadeDuration;
+        const displayDuration = 5000 - 2 * fadeDuration;
 
         let image = new Image();
         image.src = images[0]; // 最初の画像を設定してサイズを取得
@@ -186,6 +187,10 @@
         if (event.key === 'f') {
             toggleFullscreen();
         }
+    });
+
+    document.addEventListener("dblclick", () => {
+        toggleFullscreen();
     });
 </script>
 
