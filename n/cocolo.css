@@ -263,7 +263,7 @@ ul#keywordList{
     padding: 60px 25px 25px 25px;
     min-height: 400px；
     width: 500px !important;
-    width/**/: 550px;
+    width: 550px;
 }
 li{
     display: inline;
